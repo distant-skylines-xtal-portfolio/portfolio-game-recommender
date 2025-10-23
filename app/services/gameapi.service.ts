@@ -15,21 +15,24 @@ export const apiClient = axios.create({
 export const gameApi = {
   getRecommendations: async (filters: any) => {
     const response = await apiClient.post('/api/games/recommend', filters);
-    return response.data;
+    return response.data.result;
   },
   
   getGenres: async () => {
     const response = await apiClient.get('/api/games/genres');
-    return response.data;
+    return response.data.genres;
   },
   
   getPlatforms: async () => {
     const response = await apiClient.get('/api/games/platforms');
-    return response.data;
+    return response.data.platforms;
   },
 
   searchByName: async (searchText: string) => {
-    const response = await apiClient.post('/api/games/search', searchText);
-    return response.data;
+    const searchBody = {
+      search: searchText,
+    }
+    const response = await apiClient.post('/api/games/search', searchBody);
+    return response.data.result;
   }
 };

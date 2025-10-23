@@ -34,7 +34,7 @@ export function SearchResults({results, isLoading, searchTags}: SearchResultsPro
             <h2>Recommended games</h2>
             <div className="results-grid">
                 {results.map((game) => (
-                    <div>Game Result card</div>
+                    <div>{game.name}</div>
                 ))}
             </div>
         </div>
