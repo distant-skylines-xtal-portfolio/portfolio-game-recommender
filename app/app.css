@@ -76,7 +76,6 @@ header {
 
   border-radius: 4px;
   width: 280px;
-  overflow: hidden;
   
 }
 
@@ -98,7 +97,7 @@ input {
   height: 56px;
   transition: 0.2s ease all;
   box-shadow: inset 0 -1px 0 hsla(0, 0%, 0%, 0.2);
-  
+  overflow: hidden;
 }
 
 input:hover {
@@ -179,5 +178,50 @@ input:not(:placeholder-shown):valid ~ .text-input-label, input:focus ~ .text-inp
 
 .button-text:active {
   background-color: var(--color-primary-click);
+}
+
+.tag-finder {
+  background-color: var(--color-focus-dark);
+  border: 1px solid white;
+  border-radius: 4px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: scroll;
+  
+}
+
+.tag-result {
+  transition: 0.2s ease all;
+  background-color: var(--color-focus-dark);
+}
+
+.tag-result:hover {
+  background-color: var(--color-focus-light);
+}
+
+.tag-result:active {
+  background-color: var(--color-primary);
+}
+
+.tag-result:not(:last-child) { 
+  border-bottom: 1px solid hsla(0, 0%, 100%, 0.2);
+}
+
+/* Game Search Results */
+
+.results-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.game-result {
+  width: '100%';
+  height: max-content;
+  background-color: var(--color-background-lighter);
+  border: 1px solid hsla(0, 0%, 100%, 0.2);
+  border-radius: 8px;
+  padding: 8px;
 }
 

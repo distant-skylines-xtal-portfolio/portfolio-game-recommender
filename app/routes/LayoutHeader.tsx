@@ -1,7 +1,7 @@
-import { Outlet } from "react-router";
-import type {JSX} from 'react'
+import { Outlet } from 'react-router';
+import type { JSX } from 'react';
 
-export function HeaderLayout():JSX.Element {
+export function HeaderLayout(): JSX.Element {
     return (
         <div className="app-container">
             <header>
@@ -11,7 +11,7 @@ export function HeaderLayout():JSX.Element {
                 <Outlet />
             </main>
         </div>
-    )
+    );
 }
 
 export default HeaderLayout;
