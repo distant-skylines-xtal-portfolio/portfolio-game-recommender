@@ -5,7 +5,17 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
+  base: '/apps/game-recommender/',
+  build: {
+    outDir: 'build',
+    emptyOutDir: true,
+  },
   server: {
-    port:3000,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+      }
+    }
   },
 });
