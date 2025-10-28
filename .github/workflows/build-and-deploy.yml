@@ -1,0 +1,60 @@
+name: Build and Deploy Game Recommender
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      #checkout frontend repo
+      - name: Checkout frontend repo
+        uses: actions/checkout@v4
+
+      #Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with: 
+          node-version: '18'
+          cache: 'npm'
+
+      #Install dependencies
+      - name: Install dependences
+        run: npm ci
+
+      # Run tests
+      #- name: Run tests
+      #  run: npm test -- --passWithNoTests --watchAll=false
+
+      # Build React App
+      - name: Build app
+        run: npm run build
+        env: 
+          CI: true
+
+      #Checkout backend repo
+      - name: Checkout backend repo
+        uses: actions/checkout@v4
+        with:
+          repository: distant-skylines-xtal-portfolio/portfolio-backend
+          token: ${{ secrets.BACKEND_DEPLOY_TOKEN }}
+          path: backend-repo
+
+      #Copy build to backend's public folder
+      - name: Copy build to backend
+        run: |
+          rm -rf backend-repo/public/apps/game-recommender*
+          cp -r build/client/* backend-repo/public/apps/game-recommender
+      #Commit and push to backend repo
+      - name: Commit and push to backend
+        run: |
+          cd backend-repo
+          git config user.name "Github Actions Bot"
+          git config user.email "actions@github.com"
+          git add public/
+          git diff-index --quiet HEAD || git commit -m "Deploy frontend build from ${{ github.sha }}"
+          git push
