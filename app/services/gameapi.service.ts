@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { genreTag, platformTag, SearchTagType } from '~/types/tagTypes';
 import type { gameResult } from '~/types/resultTypes';
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.PROD ? '' : 'http://localhost:5000';
 
 export const apiClient = axios.create({
     baseURL: API_BASE_URL,
