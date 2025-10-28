@@ -47,8 +47,9 @@ jobs:
       #Copy build to backend's public folder
       - name: Copy build to backend
         run: |
-          rm -rf backend-repo/public/apps/game-recommender*
-          cp -r build/client/* backend-repo/public/apps/game-recommender
+          mkdir -p backend-repo/public/apps/game-recommender
+          rm -rf backend-repo/public/apps/game-recommender/*
+          cp -r build/client/* backend-repo/public/apps/game-recommender/
       #Commit and push to backend repo
       - name: Commit and push to backend
         run: |
