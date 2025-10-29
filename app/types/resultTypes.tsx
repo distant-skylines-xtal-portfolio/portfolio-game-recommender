@@ -7,4 +7,5 @@ export interface gameResult {
     name: string;
     platforms: number[];
     summary: string;
+    first_release_date_formatted?: Date;
 }

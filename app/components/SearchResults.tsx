@@ -1,5 +1,6 @@
 import type { SearchTagType } from '~/types/tagTypes';
 import type { gameResult } from '~/types/resultTypes';
+import GameCard from './GameCard.tsx';
 
 type SearchResultsProps = {
     results: gameResult[];
@@ -33,13 +34,7 @@ export function SearchResults({
             <h2>Recommended games</h2>
             <div className="results-grid">
                 {results.map((game) => (
-                    <div className="game-result">
-                        <div className="game-result-cover">{game.cover}</div>
-                        <div className="game-result-info-container">
-                            <h3>{game.name}</h3>
-                            <p>{game.summary}</p>
-                        </div>
-                    </div>
+                    <GameCard gameInfo={game} />
                 ))}
             </div>
         </div>
