@@ -1,17 +1,16 @@
-import type { gameResult } from "~/types/resultTypes";
-import {useContext, useEffect, useRef, useState, type JSX} from 'react'
-import searchContext from "~/contexts/searchContext";
-import { gameApi } from "~/services/gameapi.service";
-import {AnimatePresence, motion, rgba } from "framer-motion";
-import { coverRateLimiter } from "~/util/RateLimiter";
-import type { ref } from "process";
-import { TruncatedText } from "./TruncatedText";
+import type { gameResult } from '~/types/resultTypes';
+import { useContext, useEffect, useRef, useState, type JSX } from 'react';
+import searchContext from '~/contexts/searchContext';
+import { gameApi } from '~/services/gameapi.service';
+import { motion } from 'framer-motion';
+import { coverRateLimiter } from '~/util/RateLimiter';
+import { TruncatedText } from './TruncatedText';
 
 type GameResultProps = {
-    gameInfo: gameResult
+    gameInfo: gameResult;
 };
 
-export default function GameCard({gameInfo}:GameResultProps):JSX.Element {
+export default function GameCard({ gameInfo }: GameResultProps): JSX.Element {
     const tagsContext = useContext(searchContext);
     const cardRef = useRef<HTMLDivElement>(null);
 
@@ -21,40 +20,44 @@ export default function GameCard({gameInfo}:GameResultProps):JSX.Element {
     const [isVisible, setIsVisible] = useState(false);
 
     // Have we already made API call to fetch cover, to prevent duplicates
-    const hasFetchedRef = useRef(false); 
+    const hasFetchedRef = useRef(false);
 
     // Observer to check if the card element is close enough to the viewport to start loading
     useEffect(() => {
         if (!cardRef.current) return;
 
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         setIsVisible(true);
                         observer.disconnect();
                     }
                 });
-            }, {
+            },
+            {
                 //Load card cover when 100px from viewport
                 rootMargin: '100px',
-                threshold: 0.1
-            }
-            )
-            
-            observer.observe(cardRef.current);
+                threshold: 0.1,
+            },
+        );
 
-            return () => {
-                observer.disconnect();
-            }
-    }, [])
+        observer.observe(cardRef.current);
+
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
 
     // Fetch cover
     useEffect(() => {
         if (!isVisible || hasFetchedRef.current) return;
 
         async function fetchCover() {
-            try {  
-                console.log(`Queueing fetch cover with game id!: ${gameInfo.id}`);
+            try {
+                console.log(
+                    `Queueing fetch cover with game id!: ${gameInfo.id}`,
+                );
                 setCoverLoading(true);
 
                 const response = await coverRateLimiter.add(async () => {
@@ -69,8 +72,9 @@ export default function GameCard({gameInfo}:GameResultProps):JSX.Element {
                 }
 
                 setCoverUrl(response.imageUrl);
-            } catch(error) {
+            } catch (error) {
                 console.log('setting cover error catch!');
+                console.log(error);
                 setCoverError('Failed to load cover image!');
             } finally {
                 setCoverLoading(false);
@@ -79,11 +83,13 @@ export default function GameCard({gameInfo}:GameResultProps):JSX.Element {
         fetchCover();
     }, [isVisible, gameInfo.id]);
 
-    function getFormattedPlatform(platformId: number):string {
-        let platformTag = tagsContext?.platformTags.find(x => x.id === platformId);
-        
+    function getFormattedPlatform(platformId: number): string {
+        const platformTag = tagsContext?.platformTags.find(
+            (x) => x.id === platformId,
+        );
+
         if (!platformTag) {
-            return "Not found";
+            return 'Not found';
         }
 
         return platformTag.name;
@@ -91,7 +97,7 @@ export default function GameCard({gameInfo}:GameResultProps):JSX.Element {
 
     function getCoverElement() {
         const aspectRatio = 4 / 3;
-        const placeholderHeight = 234 * aspectRatio; 
+        const placeholderHeight = 234 * aspectRatio;
 
         if (!isVisible) {
             return (
@@ -102,7 +108,7 @@ export default function GameCard({gameInfo}:GameResultProps):JSX.Element {
                         height: `${placeholderHeight}px`,
                         backgroundColor: '#2a2a2a',
                         borderRadius: '4px',
-                    }} 
+                    }}
                 />
             );
         }
@@ -116,11 +122,10 @@ export default function GameCard({gameInfo}:GameResultProps):JSX.Element {
                         width: '100%',
                         height: `${placeholderHeight}px`,
                         borderRadius: '4px',
-
                     }}
                     initial={{
                         opacity: 0.4,
-                    }}  
+                    }}
                     animate={{
                         opacity: 1.0,
                     }}
@@ -130,14 +135,13 @@ export default function GameCard({gameInfo}:GameResultProps):JSX.Element {
                         repeat: Infinity,
                         repeatType: 'reverse',
                     }}
-                >
-                </motion.div>
-            )
+                ></motion.div>
+            );
         }
 
         if (coverError) {
             return (
-                <div 
+                <div
                     className="game-cover-loading-error"
                     style={{
                         width: '100%',
@@ -148,14 +152,16 @@ export default function GameCard({gameInfo}:GameResultProps):JSX.Element {
                         borderRadius: '4px',
                     }}
                 >
-                    <p style={{fontSize: '0.8rem', color: '#666'}}>No cover available</p>
+                    <p style={{ fontSize: '0.8rem', color: '#666' }}>
+                        No cover available
+                    </p>
                 </div>
-            )
+            );
         }
 
         if (!coverUrl || coverUrl === '') {
             return (
-                <div 
+                <div
                     className="game-cover-loading-error"
                     style={{
                         width: '100%',
@@ -166,16 +172,16 @@ export default function GameCard({gameInfo}:GameResultProps):JSX.Element {
                         borderRadius: '4px',
                     }}
                 >
-                    <p style={{color: 'white'}}>No cover URL!</p>
+                    <p style={{ color: 'white' }}>No cover URL!</p>
                 </div>
-            )
+            );
         }
 
         return (
             <motion.img
                 src={coverUrl}
                 alt={`${gameInfo.name} cover`}
-                loading='lazy'
+                loading="lazy"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
@@ -184,20 +190,24 @@ export default function GameCard({gameInfo}:GameResultProps):JSX.Element {
                     setCoverError('Image load failed');
                 }}
             />
-        )
+        );
     }
 
     return (
-        <div className="game-card" key={`game-card-${gameInfo.id}`} ref={cardRef}>
-            <div className="game-card-cover-container">
-                {
-                    getCoverElement()
-                }
-            </div>
+        <div
+            className="game-card"
+            key={`game-card-${gameInfo.id}`}
+            ref={cardRef}
+        >
+            <div className="game-card-cover-container">{getCoverElement()}</div>
             <div className="game-card-info-container">
                 <h3>{gameInfo.name}</h3>
-                <TruncatedText 
-                    text={gameInfo.summary === '' ? 'No description.' : gameInfo.summary}
+                <TruncatedText
+                    text={
+                        gameInfo.summary === ''
+                            ? 'No description.'
+                            : gameInfo.summary
+                    }
                     maxLines={11}
                     className="game-card-description"
                 />
@@ -205,7 +215,11 @@ export default function GameCard({gameInfo}:GameResultProps):JSX.Element {
             <div className="game-card-stats">
                 <div className="game-card-year-label">
                     <p className="body-text">Year: </p>
-                    <p className="body-text-bold">{gameInfo.first_release_date_formatted?.toLocaleDateString('en-GB')}</p>
+                    <p className="body-text-bold">
+                        {gameInfo.first_release_date_formatted?.toLocaleDateString(
+                            'en-GB',
+                        )}
+                    </p>
                 </div>
                 <div className="game-card-platforms">
                     <p className="body-text">Platforms: </p>
@@ -217,8 +231,7 @@ export default function GameCard({gameInfo}:GameResultProps):JSX.Element {
                         ))}
                     </div>
                 </div>
-                
             </div>
         </div>
-    )
+    );
 }

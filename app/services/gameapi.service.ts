@@ -42,13 +42,13 @@ interface recommendationFilters {
 }
 
 interface RawCover {
-    success: boolean,
-    imageUrl: string,
+    success: boolean;
+    imageUrl: string;
     coverInfo: {
-        width: number,
-        height: number,
-        animated: boolean,
-    }
+        width: number;
+        height: number;
+        animated: boolean;
+    };
 }
 
 //Transform functions
@@ -72,15 +72,17 @@ function transformPlatform(raw: RawPlatform): platformTag {
 }
 
 function transformGame(raw: RawGame): gameResult {
-    let transformedGame:gameResult = {
-        ...raw
+    const transformedGame: gameResult = {
+        ...raw,
     };
 
     if (transformedGame.summary === undefined) {
         transformedGame.summary = 'No description.';
     }
 
-    transformedGame.first_release_date_formatted = new Date(raw.first_release_date * 1000);
+    transformedGame.first_release_date_formatted = new Date(
+        raw.first_release_date * 1000,
+    );
 
     return transformedGame;
 }
@@ -128,8 +130,8 @@ export const gameApi = {
     getCover: async (gameId: number) => {
         const body = {
             gameId: gameId,
-        }
+        };
         const response = await apiClient.post('/api/games/cover', body);
         return response.data as RawCover;
-    }
+    },
 };

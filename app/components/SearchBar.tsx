@@ -37,12 +37,6 @@ export function Searchbar({ onSearch }: SearchBarProps) {
                             id="add-tag-input"
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    setInputValue('');
-                                }
-                            }}
                             placeholder="&nbsp;"
                         />
                         <label
@@ -59,6 +53,8 @@ export function Searchbar({ onSearch }: SearchBarProps) {
                             <SearchTagFinder
                                 addTag={handleAddTag}
                                 searchString={inputValue}
+                                selectedTags={tags}
+                                onTagAdded={() => setInputValue('')}
                             />
                         </div>
                     </div>

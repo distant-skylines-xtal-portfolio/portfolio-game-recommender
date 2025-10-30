@@ -1,8 +1,7 @@
-
 /**
  * Rate Limiter class to manage API calls
  */
-class RateLimiter  {
+class RateLimiter {
     private queue: Array<() => Promise<void>> = [];
     private processing = false;
     private requestsPerSeconds: number;
@@ -24,7 +23,7 @@ class RateLimiter  {
                 try {
                     const result = await fn();
                     resolve(result);
-                } catch(error) {
+                } catch (error) {
                     reject(error);
                 }
             });
@@ -32,7 +31,7 @@ class RateLimiter  {
             if (!this.processing) {
                 this.process();
             }
-        })
+        });
     }
 
     /**
@@ -46,7 +45,7 @@ class RateLimiter  {
 
         this.processing = true;
 
-        while(this.queue.length > 0) {
+        while (this.queue.length > 0) {
             const fn = this.queue.shift();
             if (fn) {
                 await fn();
@@ -61,10 +60,10 @@ class RateLimiter  {
     }
 
     private delay(ms: number): Promise<void> {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
-    getQueueLength(): number { 
+    getQueueLength(): number {
         return this.queue.length;
     }
 
