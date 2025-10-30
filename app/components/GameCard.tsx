@@ -5,6 +5,7 @@ import { gameApi } from "~/services/gameapi.service";
 import {AnimatePresence, motion, rgba } from "framer-motion";
 import { coverRateLimiter } from "~/util/RateLimiter";
 import type { ref } from "process";
+import { TruncatedText } from "./TruncatedText";
 
 type GameResultProps = {
     gameInfo: gameResult
@@ -118,7 +119,7 @@ export default function GameCard({gameInfo}:GameResultProps):JSX.Element {
 
                     }}
                     initial={{
-                        opacity: 0.2,
+                        opacity: 0.4,
                     }}  
                     animate={{
                         opacity: 1.0,
@@ -195,7 +196,11 @@ export default function GameCard({gameInfo}:GameResultProps):JSX.Element {
             </div>
             <div className="game-card-info-container">
                 <h3>{gameInfo.name}</h3>
-                <p>{gameInfo.summary === '' ? 'No description.' : gameInfo.summary}</p>
+                <TruncatedText 
+                    text={gameInfo.summary === '' ? 'No description.' : gameInfo.summary}
+                    maxLines={11}
+                    className="game-card-description"
+                />
             </div>
             <div className="game-card-stats">
                 <div className="game-card-year-label">
