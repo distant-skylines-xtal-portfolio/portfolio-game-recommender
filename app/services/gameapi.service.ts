@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { genreTag, platformTag, SearchTagType } from '~/types/tagTypes';
+import type { genreTag, keywordTag, platformTag, SearchTagType } from '~/types/tagTypes';
 import type { gameResult } from '~/types/resultTypes';
 
 const API_BASE_URL = import.meta.env.PROD ? '' : 'http://localhost:5000';
@@ -51,6 +51,12 @@ interface RawCover {
     };
 }
 
+interface RawKeyword {
+    id: number;
+    name: string;
+    slug: string;
+}
+
 //Transform functions
 function transformGenre(raw: RawGenre): genreTag {
     return {
@@ -86,6 +92,14 @@ function transformGame(raw: RawGame): gameResult {
 
     return transformedGame;
 }
+
+function transformKeyword(raw: RawKeyword):keywordTag {
+    return {
+        type: 'keywordTag',
+        id: raw.id,
+        name: raw.name,
+    }
+} 
 
 export const gameApi = {
     getRecommendations: async (filters: SearchTagType[]) => {
@@ -134,4 +148,9 @@ export const gameApi = {
         const response = await apiClient.post('/api/games/cover', body);
         return response.data as RawCover;
     },
+
+    getKeywords: async () => {
+        const response = await apiClient.get('/api/games/keywords');
+        return response.data.keywords.map(transformKeyword);
+    }
 };

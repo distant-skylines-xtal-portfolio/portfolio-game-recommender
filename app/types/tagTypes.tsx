@@ -1,9 +1,10 @@
 export interface searchTag {
-    type: 'platformTag' | 'genreTag';
+    type: 'platformTag' | 'genreTag' | 'keywordTag';
 }
 
 export interface platformTag extends searchTag {
     type: 'platformTag';
+    formattedType: 'Platform';
     abbreviation: string;
     alternative_name: string;
     id: number;
@@ -13,8 +14,17 @@ export interface platformTag extends searchTag {
 
 export interface genreTag extends searchTag {
     type: 'genreTag';
+    formattedType: 'Genre';
     id: number;
     name: string;
 }
 
-export type SearchTagType = platformTag | genreTag;
+export interface keywordTag extends searchTag {
+    type: 'keywordTag';
+    formattedType: 'Keyword';
+    id: number;
+    name: string;
+}
+
+export type SearchTagType = platformTag | genreTag | keywordTag;
+

@@ -23,9 +23,12 @@ export async function clientLoader() {
 
     const genres = await gameApi.getGenres();
 
+    const keywords = await gameApi.getKeywords();
+
     return {
         platformTags: platforms,
         genreTags: genres,
+        keywordTags: keywords
     };
 }
 

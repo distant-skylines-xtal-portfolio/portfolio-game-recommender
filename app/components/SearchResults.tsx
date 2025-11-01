@@ -1,6 +1,6 @@
 import type { SearchTagType } from '~/types/tagTypes';
 import type { gameResult } from '~/types/resultTypes';
-import GameCard from './GameCard.tsx';
+import GameCard from './GameCard';
 
 type SearchResultsProps = {
     results: gameResult[];

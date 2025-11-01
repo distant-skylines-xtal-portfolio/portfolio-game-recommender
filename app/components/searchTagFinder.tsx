@@ -4,15 +4,15 @@ import type { SearchTagType } from '~/types/tagTypes';
 
 type SearchTagFinderProps = {
     searchString: string;
-    addTag: (tag: SearchTagType) => void;
     selectedTags: SearchTagType[];
+    addTag: (tag: SearchTagType) => void;
     onTagAdded: () => void;
 };
 
 export default function SearchTagFinder({
     searchString,
-    addTag,
     selectedTags,
+    addTag,
     onTagAdded,
 }: SearchTagFinderProps) {
     const tags = useContext(searchContext);
@@ -68,11 +68,12 @@ export default function SearchTagFinder({
         }
 
         const searchResults: SearchTagType[] = [];
+        const searchStringFormatted = searchString.toLowerCase();
 
         if (tags?.genreTags) {
             searchResults.push(
                 ...tags.genreTags.filter((tag) =>
-                    tag.name.toLowerCase().includes(searchString.toLowerCase()),
+                    tag.name.toLowerCase().includes(searchStringFormatted),
                 ),
             );
         }
@@ -83,15 +84,26 @@ export default function SearchTagFinder({
                     (tag) =>
                         tag.name
                             .toLowerCase()
-                            .includes(searchString.toLowerCase()) ||
+                            .includes(searchStringFormatted) ||
                         tag.alternative_name
                             ?.toLowerCase()
-                            .includes(searchString.toLowerCase()) ||
+                            .includes(searchStringFormatted) ||
                         tag.abbreviation
                             ?.toLowerCase()
-                            .includes(searchString.toLowerCase()),
+                            .includes(searchStringFormatted),
                 ),
             );
+        }
+
+        if (tags?.keywordTags) {
+            searchResults.push(
+                ...tags.keywordTags.filter(
+                    (tag) => 
+                        tag.name
+                            .toLowerCase()
+                            .includes(searchStringFormatted)
+                )
+            )
         }
 
         return searchResults;

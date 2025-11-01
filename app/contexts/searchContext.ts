@@ -1,9 +1,10 @@
 import React from 'react';
-import type { genreTag, platformTag } from '~/types/tagTypes';
+import type { genreTag, keywordTag, platformTag } from '~/types/tagTypes';
 
 export type searchContextType = {
     platformTags: platformTag[];
     genreTags: genreTag[];
+    keywordTags: keywordTag[];
 } | null;
 
 const searchContext = React.createContext<searchContextType>(null);
