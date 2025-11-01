@@ -39,6 +39,7 @@ interface RawGame {
 interface recommendationFilters {
     genres: genreTag[];
     platforms: platformTag[];
+    keywords: keywordTag[];
 }
 
 interface RawCover {
@@ -63,6 +64,7 @@ function transformGenre(raw: RawGenre): genreTag {
         type: 'genreTag',
         id: raw.id,
         name: raw.name,
+        formattedType: 'Genre',
     };
 }
 
@@ -74,6 +76,7 @@ function transformPlatform(raw: RawPlatform): platformTag {
         abbreviation: raw.abbreviation ?? '',
         alternative_name: raw.alternative_name ?? '',
         platform_type: raw.platform_type,
+        formattedType: 'Platform',
     };
 }
 
@@ -98,6 +101,7 @@ function transformKeyword(raw: RawKeyword):keywordTag {
         type: 'keywordTag',
         id: raw.id,
         name: raw.name,
+        formattedType: 'Keyword',
     }
 } 
 
@@ -106,6 +110,7 @@ export const gameApi = {
         const sortedFilters: recommendationFilters = {
             genres: [],
             platforms: [],
+            keywords: [],
         };
 
         for (const searchTag of filters) {
@@ -113,6 +118,8 @@ export const gameApi = {
                 sortedFilters.genres.push(searchTag);
             } else if (searchTag.type === 'platformTag') {
                 sortedFilters.platforms.push(searchTag);
+            } else if (searchTag.type === 'keywordTag') {
+                sortedFilters.keywords.push(searchTag)
             }
         }
 

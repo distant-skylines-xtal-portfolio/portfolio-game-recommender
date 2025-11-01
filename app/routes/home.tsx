@@ -28,7 +28,7 @@ export async function clientLoader() {
     return {
         platformTags: platforms,
         genreTags: genres,
-        keywordTags: keywords
+        keywordTags: keywords,
     };
 }
 

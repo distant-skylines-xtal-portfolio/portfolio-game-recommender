@@ -224,7 +224,7 @@ export default function GameCard({ gameInfo }: GameResultProps): JSX.Element {
                 <div className="game-card-platforms">
                     <p className="body-text">Platforms: </p>
                     <div className="game-card-platforms-container">
-                        {gameInfo.platforms.map((platform) => (
+                        {gameInfo.platforms?.map((platform) => (
                             <div className="platform-pill">
                                 <p>{getFormattedPlatform(platform)}</p>
                             </div>

@@ -106,6 +106,8 @@ export default function SearchTagFinder({
             )
         }
 
+        searchResults.map((result) => {console.log(result.formattedType)});
+
         return searchResults;
     }
 
@@ -141,9 +143,7 @@ export default function SearchTagFinder({
                         }}
                     >
                         <p>
-                            {tagResult.type === 'platformTag'
-                                ? 'Platform'
-                                : 'Genre'}
+                            {tagResult.formattedType}
                         </p>
                         <p>{tagResult.name}</p>
                     </div>

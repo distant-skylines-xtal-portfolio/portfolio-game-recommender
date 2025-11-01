@@ -71,7 +71,7 @@ export function Searchbar({ onSearch }: SearchBarProps) {
                                     }}
                                 >
                                     <p className="tag-text">
-                                        {`${tag.type}: ${tag.name}`}
+                                        {`${tag.formattedType}: ${tag.name}`}
                                     </p>
                                     <div className="search-tag-close-icon">
                                         <TiDelete />
