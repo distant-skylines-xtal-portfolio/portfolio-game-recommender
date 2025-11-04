@@ -97,16 +97,15 @@ export default function SearchTagFinder({
 
         if (tags?.keywordTags) {
             searchResults.push(
-                ...tags.keywordTags.filter(
-                    (tag) => 
-                        tag.name
-                            .toLowerCase()
-                            .includes(searchStringFormatted)
-                )
-            )
+                ...tags.keywordTags.filter((tag) =>
+                    tag.name.toLowerCase().includes(searchStringFormatted),
+                ),
+            );
         }
 
-        searchResults.map((result) => {console.log(result.formattedType)});
+        searchResults.map((result) => {
+            console.log(result.formattedType);
+        });
 
         return searchResults;
     }
@@ -142,9 +141,7 @@ export default function SearchTagFinder({
                             addTag(tagResult);
                         }}
                     >
-                        <p>
-                            {tagResult.formattedType}
-                        </p>
+                        <p>{tagResult.formattedType}</p>
                         <p>{tagResult.name}</p>
                     </div>
                 );

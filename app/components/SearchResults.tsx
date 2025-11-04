@@ -1,6 +1,8 @@
 import type { SearchTagType } from '~/types/tagTypes';
 import type { gameResult } from '~/types/resultTypes';
 import GameCard from './GameCard';
+import { motion } from 'framer-motion';
+import type { JSX } from 'react';
 
 type SearchResultsProps = {
     results: gameResult[];
@@ -13,8 +15,35 @@ export function SearchResults({
     isLoading,
     searchTags,
 }: SearchResultsProps) {
+    function getLoadingElement() {
+        const elements: JSX.Element[] = [];
+
+        for (let i = 0; i < 5; i++) {
+            elements.push(
+                <motion.div
+                    className="card loading-card"
+                    key={`loading-card-${i}`}
+                    initial={{ opacity: 0.3 }}
+                    animate={{ opacity: 1 }}
+                    transition={{
+                        duration: 0.5,
+                        repeat: Infinity,
+                        ease: 'linear',
+                    }}
+                    style={{}}
+                ></motion.div>,
+            );
+        }
+        return elements;
+    }
+
     if (isLoading) {
-        return <div>Searching for games...</div>;
+        return (
+            <div className="results-grid">
+                <h2>Recommended games</h2>
+                {getLoadingElement()}
+            </div>
+        );
     }
 
     if (searchTags.length === 0) {

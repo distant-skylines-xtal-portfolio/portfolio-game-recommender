@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import type { Route } from './+types/home';
+import { useEffect, useState } from 'react';
 import Searchbar from '~/components/SearchBar';
 import { SearchResults } from '~/components/SearchResults';
 import { gameApi } from '~/services/gameapi.service';
@@ -8,6 +7,8 @@ import searchContext, {
 } from '~/contexts/searchContext';
 import type { SearchTagType } from '~/types/tagTypes';
 import type { gameResult } from '~/types/resultTypes';
+import { AnimatePresence, motion } from 'framer-motion';
+import LoadingScreen from '~/components/LoadingScreen';
 
 export function meta() {
     return [
@@ -18,46 +19,90 @@ export function meta() {
         },
     ];
 }
-export async function clientLoader() {
-    const platforms = await gameApi.getPlatforms();
 
-    const genres = await gameApi.getGenres();
-
-    const keywords = await gameApi.getKeywords();
-
-    return {
-        platformTags: platforms,
-        genreTags: genres,
-        keywordTags: keywords,
-    };
-}
-
-export default function Home({ loaderData }: Route.ComponentProps) {
-    const tagSearchContext: searchContextType = loaderData;
+export default function Home() {
     const [searchTags, setSearchTags] = useState<SearchTagType[]>([]);
     const [searchResults, setSearchResults] = useState<gameResult[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isSearching, setIsSearching] = useState(false);
+    const [tagContext, setTagContext] = useState<searchContextType | null>(
+        null,
+    );
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+    useEffect(() => {
+        async function loadInitialData() {
+            try {
+                const [platforms, genres, keywords] = await Promise.all([
+                    gameApi.getPlatforms(),
+                    gameApi.getGenres(),
+                    gameApi.getKeywords(),
+                ]);
+
+                setTagContext({
+                    platformTags: platforms,
+                    genreTags: genres,
+                    keywordTags: keywords,
+                });
+            } catch (error) {
+                console.error('Failed to load tags:', error);
+                // Set empty context so app still works
+                setTagContext({
+                    platformTags: [],
+                    genreTags: [],
+                    keywordTags: [],
+                });
+            } finally {
+                setIsInitialLoading(false);
+            }
+        }
+
+        loadInitialData();
+    }, []);
 
     async function handleSearch(tags: SearchTagType[]) {
-        setIsLoading(true);
+        setIsSearching(true);
         setSearchTags(tags);
 
         const result = await gameApi.getRecommendations(tags);
 
         setSearchResults(result);
-        setIsLoading(false);
+        setIsSearching(false);
+    }
+
+    if (isInitialLoading) {
+        return (
+            <AnimatePresence mode="wait">
+                <LoadingScreen />
+            </AnimatePresence>
+        );
+    }
+
+    if (!tagContext) {
+        return (
+            <div className="error-message">
+                Failed to load game data. Please refresh the page.
+            </div>
+        );
     }
 
     return (
-        <div className="home-page">
-            <searchContext.Provider value={tagSearchContext}>
-                <Searchbar onSearch={handleSearch} />
-                <SearchResults
-                    isLoading={isLoading}
-                    results={searchResults}
-                    searchTags={searchTags}
-                />
-            </searchContext.Provider>
-        </div>
+        <AnimatePresence mode="wait">
+            <motion.div
+                className="home-page"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+            >
+                <searchContext.Provider value={tagContext}>
+                    <Searchbar onSearch={handleSearch} />
+                    <SearchResults
+                        isLoading={isSearching}
+                        results={searchResults}
+                        searchTags={searchTags}
+                    />
+                </searchContext.Provider>
+            </motion.div>
+        </AnimatePresence>
     );
 }

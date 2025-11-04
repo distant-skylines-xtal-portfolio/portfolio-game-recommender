@@ -50,13 +50,26 @@ h3 {
     font-size: 1.1rem;
 }
 
+body {
+    height: 100dvh;
+}
+
+.app-container {
+    height: 100%;
+}
+
+main {
+    height: 100%;
+}
+
 .home-page {
     width: 100%;
     height: 100%;
 
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+
 
     padding: 16px;
 
@@ -66,7 +79,7 @@ h3 {
 
 .search-bar {
     width: 100%;
-    flex: 1 1 auto;
+    flex: 0 1 auto;
 
     border: 1px solid white;
     border-radius: 8px;
@@ -233,16 +246,25 @@ input:focus ~ .text-input-label {
     gap: 8px;
 }
 
-.game-card {
+.card {
     width: 100%;
-    background-color: var(--color-background-lighter);
     border: 1px solid hsla(0, 0%, 100%, 0.2);
     border-radius: 8px;
     padding: 8px;
     display: flex;
     gap: 8px;
     flex: 0 1 auto;
+}
+
+.card.game-card {
+    background-color: var(--color-background-lighter);
     /* Height will be determined by cover image */
+}
+
+.card.loading-card {
+    background-color: var(--color-loading);
+    border: none;
+    height: 312px;
 }
 
 .game-card-cover-container {
@@ -267,7 +289,7 @@ input:focus ~ .text-input-label {
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
-    min-width: 0;
+    width: 75%;
     gap: 8px;
 }
 
@@ -280,6 +302,7 @@ input:focus ~ .text-input-label {
     display: -webkit-box;
     max-height: fit-content;
     flex: 0 1 max-content;
+    
     line-height: 1.5;
 }
 

@@ -195,7 +195,7 @@ export default function GameCard({ gameInfo }: GameResultProps): JSX.Element {
 
     return (
         <div
-            className="game-card"
+            className="card game-card"
             key={`game-card-${gameInfo.id}`}
             ref={cardRef}
         >

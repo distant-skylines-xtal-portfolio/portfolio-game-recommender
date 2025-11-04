@@ -27,4 +27,3 @@ export interface keywordTag extends searchTag {
 }
 
 export type SearchTagType = platformTag | genreTag | keywordTag;
-
