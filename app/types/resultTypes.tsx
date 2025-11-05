@@ -9,3 +9,10 @@ export interface gameResult {
     summary: string;
     first_release_date_formatted?: Date;
 }
+
+
+export interface RecommendationResult {
+    count: number;
+    offset: number;
+    games: gameResult[];
+}

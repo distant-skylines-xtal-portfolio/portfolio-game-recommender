@@ -5,7 +5,7 @@ import type {
     platformTag,
     SearchTagType,
 } from '~/types/tagTypes';
-import type { gameResult } from '~/types/resultTypes';
+import type { gameResult, RecommendationResult } from '~/types/resultTypes';
 
 const API_BASE_URL = import.meta.env.PROD ? '' : 'http://localhost:5000';
 
@@ -45,6 +45,7 @@ interface recommendationFilters {
     genres: genreTag[];
     platforms: platformTag[];
     keywords: keywordTag[];
+    offset: number;
 }
 
 interface RawCover {
@@ -62,6 +63,7 @@ interface RawKeyword {
     name: string;
     slug: string;
 }
+
 
 //Transform functions
 function transformGenre(raw: RawGenre): genreTag {
@@ -111,11 +113,12 @@ function transformKeyword(raw: RawKeyword): keywordTag {
 }
 
 export const gameApi = {
-    getRecommendations: async (filters: SearchTagType[]) => {
+    getRecommendations: async (filters: SearchTagType[], offset=0) => {
         const sortedFilters: recommendationFilters = {
             genres: [],
             platforms: [],
             keywords: [],
+            offset: offset,
         };
 
         for (const searchTag of filters) {
@@ -132,7 +135,12 @@ export const gameApi = {
             '/api/games/recommend',
             sortedFilters,
         );
-        return response.data.games.map(transformGame);
+        const result:RecommendationResult = {
+            count: response.data.count,
+            games: response.data.games.map(transformGame),
+            offset: offset,
+        }
+        return result;
     },
 
     getGenres: async () => {

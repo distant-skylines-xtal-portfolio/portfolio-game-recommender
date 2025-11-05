@@ -3,7 +3,7 @@ import { TiDelete } from 'react-icons/ti';
 import SearchTagFinder from './searchTagFinder';
 import type { SearchTagType } from '~/types/tagTypes';
 type SearchBarProps = {
-    onSearch: (tags: SearchTagType[]) => void;
+    onSearch: (tags: SearchTagType[], offset:number) => void;
 };
 
 export function Searchbar({ onSearch }: SearchBarProps) {
@@ -17,7 +17,7 @@ export function Searchbar({ onSearch }: SearchBarProps) {
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        onSearch(tags);
+        onSearch(tags, 0);
     }
 
     function handleTagRemove(tag: SearchTagType) {

@@ -6,7 +6,7 @@ import searchContext, {
     type searchContextType,
 } from '~/contexts/searchContext';
 import type { SearchTagType } from '~/types/tagTypes';
-import type { gameResult } from '~/types/resultTypes';
+import type { RecommendationResult } from '~/types/resultTypes';
 import { AnimatePresence, motion } from 'framer-motion';
 import LoadingScreen from '~/components/LoadingScreen';
 
@@ -22,7 +22,7 @@ export function meta() {
 
 export default function Home() {
     const [searchTags, setSearchTags] = useState<SearchTagType[]>([]);
-    const [searchResults, setSearchResults] = useState<gameResult[]>([]);
+    const [searchResults, setSearchResults] = useState<RecommendationResult>({count: 0, games: [], offset: 0});
     const [isSearching, setIsSearching] = useState(false);
     const [tagContext, setTagContext] = useState<searchContextType | null>(
         null,
@@ -59,11 +59,13 @@ export default function Home() {
         loadInitialData();
     }, []);
 
-    async function handleSearch(tags: SearchTagType[]) {
+    async function handleSearch(tags: SearchTagType[], offset=0) {
         setIsSearching(true);
         setSearchTags(tags);
 
-        const result = await gameApi.getRecommendations(tags);
+        console.log(`handling search: ${offset}`)
+
+        const result = await gameApi.getRecommendations(tags, offset);
 
         setSearchResults(result);
         setIsSearching(false);
@@ -100,6 +102,7 @@ export default function Home() {
                         isLoading={isSearching}
                         results={searchResults}
                         searchTags={searchTags}
+                        onSearch={handleSearch}
                     />
                 </searchContext.Provider>
             </motion.div>

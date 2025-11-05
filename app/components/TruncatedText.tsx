@@ -23,10 +23,6 @@ export function TruncatedText({
         const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
         const maxHeight = lineHeight * maxLines;
 
-        console.log(
-            `offsetHeight: ${element.offsetHeight}, scrollHeight: ${element.scrollHeight}`,
-        );
-        console.log(`maxHeight: ${maxHeight}`);
 
         if (element.scrollHeight > maxHeight) {
             setIsTruncated(true);
