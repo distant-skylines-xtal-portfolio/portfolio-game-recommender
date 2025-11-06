@@ -56,7 +56,7 @@ export function SearchResults({
                     initial={{ opacity: 0.3 }}
                     animate={{ opacity: 1 }}
                     transition={{
-                        duration: 0.5,
+                        duration: 1.5,
                         repeat: Infinity,
                         ease: 'linear',
                     }}
