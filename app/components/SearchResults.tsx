@@ -51,6 +51,7 @@ export function SearchResults({
         for (let i = 0; i < 5; i++) {
             elements.push(
                 <motion.div
+                    role='loading-placeholder-card'
                     className="card loading-card"
                     key={`loading-card-${i}`}
                     initial={{ opacity: 0.3 }}
@@ -76,7 +77,7 @@ export function SearchResults({
 
     // Show initial state when no search has been performed
     if (searchTags.length === 0) {
-        return <div>Try searching!</div>;
+        return <div id="not-yet-searched">Try searching!</div>;
     }
 
     // Show loading state with pagination
