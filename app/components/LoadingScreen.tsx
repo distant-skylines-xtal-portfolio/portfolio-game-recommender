@@ -50,6 +50,7 @@ export default function LoadingScreen(): JSX.Element {
                 initial={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 3 }}
+                data-testid="loading-container"
             >
                 <motion.div
                     className="loading-screen"

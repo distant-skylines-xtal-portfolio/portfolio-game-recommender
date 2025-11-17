@@ -198,6 +198,7 @@ export default function GameCard({ gameInfo }: GameResultProps): JSX.Element {
             className="card game-card"
             key={`game-card-${gameInfo.id}`}
             ref={cardRef}
+            data-testid="game-card"
         >
             <div className="game-card-cover-container">{getCoverElement()}</div>
             <div className="game-card-info-container">

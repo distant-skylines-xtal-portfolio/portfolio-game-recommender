@@ -3,9 +3,9 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
-  base: '/apps/game-recommender/',
+  base: mode === 'production' ? '/apps/game-recommender/' : '/',
   build: {
     outDir: 'build',
     emptyOutDir: true,
@@ -18,4 +18,4 @@ export default defineConfig({
       }
     }
   },
-});
+}));

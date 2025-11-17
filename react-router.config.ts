@@ -2,5 +2,5 @@ import type { Config } from "@react-router/dev/config";
 
 export default {
   ssr: false,
-  basename: '/apps/game-recommender',
+  basename: process.env.NODE_ENV === 'production' ? '/apps/game-recommender' : '/',
 } satisfies Config;

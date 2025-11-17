@@ -121,7 +121,9 @@ export function SearchResults({
 
     // Show search results with pagination at top and bottom
     return (
-        <div className="search-results">
+        <div className="search-results"
+            data-testid="search-results"
+        >
             <h2>Recommended games</h2>
 
             {/* Top pagination */}

@@ -127,6 +127,8 @@ export default function SearchTagFinder({
                 width: '100%',
                 height: 'max-content',
             }}
+
+            data-testid="search-tag-finder"
         >
             {searchResults.map((tagResult, index) => {
                 return (
@@ -140,6 +142,13 @@ export default function SearchTagFinder({
                         onClick={() => {
                             addTag(tagResult);
                         }}
+                        role='button'
+                        aria-label='search tag button'
+                        data-testid={
+                            index === selectedResult
+                                ? 'tag-result-selected'
+                                : 'tag-result'
+                        }
                     >
                         <p>{tagResult.formattedType}</p>
                         <p>{tagResult.name}</p>

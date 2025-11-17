@@ -25,7 +25,9 @@ export function Searchbar({ onSearch }: SearchBarProps) {
     }
 
     return (
-        <div className="search-bar">
+        <div className="search-bar"
+            data-testid="search-bar"
+        >
             <form onSubmit={handleSubmit}>
                 <div className="input-container">
                     <div
@@ -38,6 +40,8 @@ export function Searchbar({ onSearch }: SearchBarProps) {
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
                             placeholder="&nbsp;"
+                            data-testid="add-tag-input"
+                            role='searchbox'
                         />
                         <label
                             htmlFor="add-tag-input"
@@ -69,6 +73,10 @@ export function Searchbar({ onSearch }: SearchBarProps) {
                                     onClick={() => {
                                         handleTagRemove(tag);
                                     }}
+                                    data-testid='search-tag'
+                                    role='button'
+                                    aria-label="Selected Tag to search with,
+                                     click to remove from search criteria"
                                 >
                                     <p className="tag-text">
                                         {`${tag.formattedType}: ${tag.name}`}
@@ -85,6 +93,7 @@ export function Searchbar({ onSearch }: SearchBarProps) {
                         className="button-text"
                         type="submit"
                         disabled={tags.length === 0}
+                        role='button'
                     >
                         Search Games
                     </button>
