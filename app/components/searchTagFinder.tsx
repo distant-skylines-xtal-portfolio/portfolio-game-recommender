@@ -103,10 +103,7 @@ export default function SearchTagFinder({
             );
         }
 
-        searchResults.map((result) => {
-            console.log(result.formattedType);
-        });
-
+        
         return searchResults;
     }
 

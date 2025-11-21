@@ -18,7 +18,9 @@ export function AnimatedHeader(): JSX.Element {
     const shouldReduceMotion = useReducedMotion();
     const [shapes, setShapes] = useState<FloatingShape[]>([]);
 
+
     useEffect(() => {
+
         // Don't animate if user prefers reduced motion
         if (shouldReduceMotion) return;
 

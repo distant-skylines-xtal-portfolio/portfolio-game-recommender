@@ -61,11 +61,42 @@ export const mockGames = {
     ]
 };
 
+export const mockFullGameInfo = {
+    id: 1,
+    age_ratings: [],
+    cover: 12345,
+    created_at: 0,
+    first_release_date: 1609459200,
+    franchises: [],
+    game_modes: [],
+    genres: [1, 2],
+    involved_companies: [],
+    keywords: [1],
+    name: 'Test Game 1',
+    parent_game: 0,
+    platforms: [1, 2],
+    player_perspectives: [],
+    release_dates: [],
+    screenshots: [],
+    similar_games: [],
+    slug: 'test-game-1',
+    summary: 'A test game for testing',
+    tags: [],
+    themes: [],
+    updated_at: [],
+    url: '',
+    checksum: '',
+    collections: [],
+    game_type: 0
+}
+
 /**
  * Setup API mocks for consistent test data
  */
 export async function setupAPIMocks(page: Page) {
     // Mock platforms endpoint
+    // The body should be whatever ends up being the response.data. object,
+    // After the call is intercepted here it is then wrapped in the axios response.
     await page.route('**/api/games/platforms', async (route) => {
         await route.fulfill({
             status: 200,
@@ -98,6 +129,34 @@ export async function setupAPIMocks(page: Page) {
             status: 200,
             contentType: 'application/json',
             body: JSON.stringify(mockGames)
+        });
+    });
+
+    // Mock full game info enpoint
+    await page.route('**/api/games/fullinfo/**', async (route) => {
+        const url = route.request().url();
+        const gameId = url.split('/').pop();
+        
+        await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ game: [mockFullGameInfo] })  
+        });
+    });
+
+    await page.route('**/api/games/cover', async (route) => {
+        await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+                success: true,
+                imageUrl: 'https://via.placeholder.com/264x352',
+                coverInfo: {
+                    width: 264,
+                    height: 352,
+                    animated: false
+                }
+            })
         });
     });
 }

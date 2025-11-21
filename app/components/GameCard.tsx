@@ -5,6 +5,8 @@ import { gameApi } from '~/services/gameapi.service';
 import { motion } from 'framer-motion';
 import { coverRateLimiter } from '~/util/RateLimiter';
 import { TruncatedText } from './TruncatedText';
+import { NavLink } from 'react-router';
+import { SearchUrlBuilder } from '~/util/SearchURLBuilder';
 
 type GameResultProps = {
     gameInfo: gameResult;
@@ -55,26 +57,21 @@ export default function GameCard({ gameInfo }: GameResultProps): JSX.Element {
 
         async function fetchCover() {
             try {
-                console.log(
-                    `Queueing fetch cover with game id!: ${gameInfo.id}`,
-                );
+                
                 setCoverLoading(true);
 
                 const response = await coverRateLimiter.add(async () => {
-                    console.log(`fetching cover with game id!: ${gameInfo.id}`);
                     return await gameApi.getCover(gameInfo.id);
                 });
 
                 if (!response.success) {
-                    console.log('setting cover error response fail!');
                     setCoverError('Failed to load cover image!');
                     return;
                 }
 
                 setCoverUrl(response.imageUrl);
             } catch (error) {
-                console.log('setting cover error catch!');
-                console.log(error);
+                console.error('Error when trying to get cover image: ', error);
                 setCoverError('Failed to load cover image!');
             } finally {
                 setCoverLoading(false);
@@ -94,6 +91,7 @@ export default function GameCard({ gameInfo }: GameResultProps): JSX.Element {
 
         return platformTag.name;
     }
+
 
     function getCoverElement() {
         const aspectRatio = 4 / 3;
@@ -193,6 +191,12 @@ export default function GameCard({ gameInfo }: GameResultProps): JSX.Element {
         );
     }
 
+    function getDetailLink() {
+        const currentSearchPath = SearchUrlBuilder.getSearchPathFromLocation(location.pathname);
+        const detailUrl = SearchUrlBuilder.buildDetailUrl(gameInfo.id, currentSearchPath);
+        return detailUrl;
+    }
+
     return (
         <div
             className="card game-card"
@@ -202,7 +206,7 @@ export default function GameCard({ gameInfo }: GameResultProps): JSX.Element {
         >
             <div className="game-card-cover-container">{getCoverElement()}</div>
             <div className="game-card-info-container">
-                <h3>{gameInfo.name}</h3>
+                <NavLink className="game-card-title" to={`/${getDetailLink()}`}>{gameInfo.name}</NavLink>
                 <TruncatedText
                     text={
                         gameInfo.summary === ''

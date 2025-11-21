@@ -1,14 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Searchbar from '~/components/SearchBar';
 import { SearchResults } from '~/components/SearchResults';
 import { gameApi } from '~/services/gameapi.service';
-import searchContext, {
-    type searchContextType,
-} from '~/contexts/searchContext';
+import searchContext from '~/contexts/searchContext';
 import type { SearchTagType } from '~/types/tagTypes';
 import type { RecommendationResult } from '~/types/resultTypes';
 import { AnimatePresence, motion } from 'framer-motion';
-import LoadingScreen from '~/components/LoadingScreen';
+import searchStateContext from '~/contexts/searchStateContext';
 
 export function meta() {
     return [
@@ -21,63 +19,15 @@ export function meta() {
 }
 
 export default function Home() {
-    const [searchTags, setSearchTags] = useState<SearchTagType[]>([]);
-    const [searchResults, setSearchResults] = useState<RecommendationResult>({count: 0, games: [], offset: 0});
+    const tagContext = useContext(searchContext);
+    const currentSearchStateContext = useContext(searchStateContext);
+    
+    const [searchResults, setSearchResults] = useState<RecommendationResult>({
+        count: 0, 
+        games: [], 
+        offset: 0
+    });
     const [isSearching, setIsSearching] = useState(false);
-    const [tagContext, setTagContext] = useState<searchContextType | null>(
-        null,
-    );
-    const [isInitialLoading, setIsInitialLoading] = useState(true);
-
-    useEffect(() => {
-        async function loadInitialData() {
-            try {
-                const [platforms, genres, keywords] = await Promise.all([
-                    gameApi.getPlatforms(),
-                    gameApi.getGenres(),
-                    gameApi.getKeywords(),
-                ]);
-
-                setTagContext({
-                    platformTags: platforms,
-                    genreTags: genres,
-                    keywordTags: keywords,
-                });
-            } catch (error) {
-                console.error('Failed to load tags:', error);
-                // Set empty context so app still works
-                setTagContext({
-                    platformTags: [],
-                    genreTags: [],
-                    keywordTags: [],
-                });
-            } finally {
-                setIsInitialLoading(false);
-            }
-        }
-
-        loadInitialData();
-    }, []);
-
-    async function handleSearch(tags: SearchTagType[], offset=0) {
-        setIsSearching(true);
-        setSearchTags(tags);
-
-        console.log(`handling search: ${offset}`)
-
-        const result = await gameApi.getRecommendations(tags, offset);
-
-        setSearchResults(result);
-        setIsSearching(false);
-    }
-
-    if (isInitialLoading) {
-        return (
-            <AnimatePresence mode="wait">
-                <LoadingScreen />
-            </AnimatePresence>
-        );
-    }
 
     if (!tagContext) {
         return (
@@ -85,6 +35,50 @@ export default function Home() {
                 Failed to load game data. Please refresh the page.
             </div>
         );
+    }
+
+    if (!currentSearchStateContext) {
+        return null;
+    }
+
+    
+
+    // Perform search when tags or offset change
+    useEffect(() => {
+        if (currentSearchStateContext.searchTags.length === 0) {
+            setSearchResults({ count: 0, games: [], offset: 0 });
+            return;
+        }
+
+        if (currentSearchStateContext === null) return;
+
+        async function performSearch() {
+            setIsSearching(true);
+            try {
+                if (currentSearchStateContext === null) return;
+                const result = await gameApi.getRecommendations(currentSearchStateContext.searchTags, currentSearchStateContext.currentOffset);
+                setSearchResults(result);
+            } catch(error) {
+                console.error('Search failed: ', error);
+            } finally {
+                setIsSearching(false);
+            }
+        }
+
+        performSearch();
+    }, [currentSearchStateContext]);
+
+    async function handleSearch(tags: SearchTagType[], offset: number = 0) {
+        if (!currentSearchStateContext) return;
+
+        if (tags.length === 0) {
+            currentSearchStateContext.setSearchTags([]);
+            currentSearchStateContext.setCurrentOffset(0);
+            return;
+        }
+
+        currentSearchStateContext.setSearchTags(tags);
+        currentSearchStateContext.setCurrentOffset(offset);
     }
 
     return (
@@ -97,15 +91,17 @@ export default function Home() {
                 transition={{ duration: 0.3 }}
                 data-testid="home-page"
             >
-                <searchContext.Provider value={tagContext}>
-                    <Searchbar onSearch={handleSearch} />
-                    <SearchResults
-                        isLoading={isSearching}
-                        results={searchResults}
-                        searchTags={searchTags}
-                        onSearch={handleSearch}
-                    />
-                </searchContext.Provider>
+                <Searchbar 
+                    restoredTags={currentSearchStateContext.searchTags}
+                    onSearch={handleSearch} 
+                />
+                <SearchResults
+                    isLoading={isSearching}
+                    results={searchResults}
+                    searchTags={currentSearchStateContext.searchTags}
+                    onSearch={handleSearch}
+                    currentOffset={currentSearchStateContext.currentOffset}
+                />
             </motion.div>
         </AnimatePresence>
     );

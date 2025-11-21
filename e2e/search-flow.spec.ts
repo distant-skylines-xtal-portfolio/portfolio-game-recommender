@@ -5,14 +5,12 @@ import {
     typeForTagSearch,
     selectFirstTag
 } from './test-setup';
-import { button } from 'framer-motion/client';
 
 test.describe('Game Search Flow', () => {
     
     test.beforeEach(async ({ page }) => {
         await setupAPIMocks(page);
         
-        // Now navigate
         await page.goto('/');
         
         // Wait for app to be fully ready with context loaded
@@ -174,7 +172,47 @@ test.describe('Game Search Flow', () => {
         await expect(input).toHaveValue('');
     });
 
+    test('should navigate to detail page when game card title clicked', async({page}) => {
+        const consoleMessages = [];
+        page.on('console', msg => {
+            consoleMessages.push({
+            type: msg.type(),
+            text: msg.text()
+            });
+            console.log(`[Browser Console] ${msg.type().toUpperCase()}: ${msg.text()}`);
+        });
+            
+
+        // Add a tag
+        await typeForTagSearch(page, 'action');
+        await selectFirstTag(page);
+        
+        // Click search
+        const searchButton = page.getByRole('button', {name: 'Search Games'});
+        await expect(searchButton).toBeEnabled();
+        await searchButton.click();
+        
+        // Wait for results
+        const searchResults = page.getByTestId('search-results');
+        await expect(searchResults).toBeVisible({ timeout: 10000 });
+
+        // Select game card
+        const actionGameCard = page.getByTestId('game-card').filter({hasText: 'Test Game 1'});
+        await expect(actionGameCard).toBeVisible({ timeout: 10000 });
+
+        const actionGameCardHeader = actionGameCard.getByText('Test Game 1');
+        actionGameCardHeader.click();
+
+        const detailPage = page.getByTestId('detail-page');
+        await expect(detailPage).toBeVisible({timeout: 10000});
+
+        // Does the title of the game display properly
+        const detailPageHeader = page.getByTestId('text-detail-header');
+        await expect(detailPageHeader).toHaveText('Test Game 1');
+    })
 });
+
+
 
 // Additional test for debugging purposes
 test.describe('Debug helpers', () => {

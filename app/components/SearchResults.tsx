@@ -4,11 +4,13 @@ import GameCard from './GameCard';
 import { Pagination } from './Pagination';
 import { motion } from 'framer-motion';
 import { useEffect, useState, type JSX } from 'react';
+import { TbCurrentLocationOff } from 'react-icons/tb';
 
 type SearchResultsProps = {
     results: RecommendationResult;
     isLoading: boolean;
     searchTags: SearchTagType[];
+    currentOffset: number;
     onSearch: (tags: SearchTagType[], offset: number) => void;
 };
 
@@ -16,34 +18,19 @@ export function SearchResults({
     results,
     isLoading,
     searchTags,
+    currentOffset,
     onSearch,
 }: SearchResultsProps) {
-    const [selectedPageNum, setSelectedPageNum] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [resultsInfo, setResultsInfo] = useState({
-        count: 0,
-        offset: 0,
-        displayEnd: 0,
-    });
+    const RESULTS_PER_PAGE = 50;
+    const currentPage = Math.floor(currentOffset / RESULTS_PER_PAGE) + 1;
+    const totalPages = Math.ceil(results.count / RESULTS_PER_PAGE);
 
-    // Reset to page 1 when search tags change
-    useEffect(() => {
-        setSelectedPageNum(1);
-    }, [searchTags]);
+    const resultsInfo = {
+        count: results.count,
+        offset: currentOffset,
+        displayEnd: currentOffset + Math.min(RESULTS_PER_PAGE, results.count - currentOffset),
+    };
 
-    // Update pagination info when results change
-    useEffect(() => {
-        if (results.count > 0) {
-            const pages = Math.ceil(results.count / 50);
-            setTotalPages(pages);
-            setResultsInfo({
-                count: results.count,
-                offset: results.offset,
-                displayEnd:
-                    results.offset + Math.min(50, results.count - results.offset),
-            });
-        }
-    }, [results]);
 
     function getLoadingElements(): JSX.Element[] {
         const elements: JSX.Element[] = [];
@@ -71,8 +58,7 @@ export function SearchResults({
         if (pageNum < 1 || pageNum > totalPages) {
             return;
         }
-        setSelectedPageNum(pageNum);
-        onSearch(searchTags, (pageNum - 1) * 50);
+        onSearch(searchTags, (pageNum - 1) * RESULTS_PER_PAGE);
     }
 
     // Show initial state when no search has been performed
@@ -88,7 +74,7 @@ export function SearchResults({
                 <div className="page-info-container">
                     {totalPages > 1 && (
                         <Pagination
-                            currentPage={selectedPageNum}
+                            currentPage={currentPage}
                             totalPages={totalPages}
                             onPageChange={handlePageChange}
                         />
@@ -105,7 +91,11 @@ export function SearchResults({
                         </div>
                     )}
                 </div>
-                <div className="results-grid">{getLoadingElements()}</div>
+                <div className="results-grid">
+                    <div className="search-results">
+                        {getLoadingElements()}
+                    </div>
+                </div>
             </div>
         );
     }
@@ -130,7 +120,7 @@ export function SearchResults({
             <div className="page-info-container">
                 {totalPages > 1 && (
                     <Pagination
-                        currentPage={selectedPageNum}
+                        currentPage={currentPage}
                         totalPages={totalPages}
                         onPageChange={handlePageChange}
                     />
@@ -154,7 +144,7 @@ export function SearchResults({
             {totalPages > 1 && (
                 <div className="page-info-container">
                     <Pagination
-                        currentPage={selectedPageNum}
+                        currentPage={currentPage}
                         totalPages={totalPages}
                         onPageChange={handlePageChange}
                     />
