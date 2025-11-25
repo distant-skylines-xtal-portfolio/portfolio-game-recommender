@@ -73,13 +73,18 @@ export function AnimatedHeader(): JSX.Element {
 
     return (
         <header className="animated-header">
+            
             {/* Animated gradient background */}
             <motion.div
                 className="gradient-background"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1 }}
-            />
+            >
+                <div className='igdb-subtitle'>
+                    Powered by IGDB
+                </div>
+            </motion.div>
 
             {/* Floating shapes */}
             {!shouldReduceMotion && shapes.length > 0 && (
@@ -142,7 +147,9 @@ export function AnimatedHeader(): JSX.Element {
                 >
                     Discover your next favorite game
                 </motion.p>
+                
             </motion.div>
+            
         </header>
     );
 }

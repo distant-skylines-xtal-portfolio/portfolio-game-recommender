@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import searchContext from '~/contexts/searchContext';
 import type { SearchTagType } from '~/types/tagTypes';
 
@@ -18,11 +18,78 @@ export default function SearchTagFinder({
     const tags = useContext(searchContext);
     const [searchResults, setSearchResults] = useState<SearchTagType[]>([]);
     const [selectedResult, setSelectedResult] = useState(0);
+    const [isVisible, setIsVisible] = useState(true);
+
+    const tagFinderRef = useRef<HTMLDivElement>(null);
+    const selectedItemRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const searchResults = searchTags();
         setSearchResults(searchResults);
+        setSelectedResult(0);
     }, [searchString, tags, selectedTags]);
+
+    useEffect(() => {
+        function handleClickOutside(e: MouseEvent) {
+            const input = document.getElementById('add-tag-input');
+            const target = e.target as Node;
+            if (!input) {
+                console.log(`input is null`);
+                return;
+            }
+            console.log(`handleClickOutside: ${target.nodeName}, inputcontainstarget: ${input.contains(target)}`);
+            if (
+                tagFinderRef.current && 
+                !tagFinderRef.current.contains(target) && 
+                input && 
+                !input.contains(target)
+            ) {
+                setIsVisible(false);
+            }
+        }
+
+        function handleInputFocus(e: FocusEvent) {
+            const input = document.getElementById('add-tag-input');
+            if (e.target === input) {
+                setIsVisible(true);
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('focusin', handleInputFocus);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('focusin', handleInputFocus);
+        };
+    }, [])
+
+    useEffect(() => {
+        if (!selectedItemRef.current && !tagFinderRef.current) {
+            return;
+        }
+
+        const container = tagFinderRef.current;
+        const item = selectedItemRef.current;
+
+        if (!container || !item) {
+            return;
+        }
+
+        const containerRect = container?.getBoundingClientRect();
+        const itemRect = item?.getBoundingClientRect();
+
+        const isAboveView = itemRect.top < containerRect.top;
+        const isBelowView = itemRect.bottom > containerRect.bottom;
+
+        console.log(`isAboveView: ${isAboveView}, isBelow: ${isBelowView}, itemRect.top: ${itemRect.top}, itemRect.bottom: ${itemRect.bottom}, containerRect.top: ${containerRect.top}, containerRect.bottom: ${containerRect.bottom}`);
+
+        if (isAboveView) {
+            item.scrollIntoView({block: 'start', behavior: 'smooth'});
+        } else if (isBelowView) {
+            item.scrollIntoView({block: 'end', behavior: 'smooth'});
+        }
+    }, [selectedResult])
 
     useEffect(() => {
         function handleKeyDown(e: KeyboardEvent) {
@@ -33,8 +100,11 @@ export default function SearchTagFinder({
                 return;
             }
 
-            if (e.key === 'Enter' && searchResults.length > 0) {
+            if (e.key === 'Enter' || e.key === 'ArrowDown' || e.key === 'ArrowUp') {
                 e.preventDefault();
+            }
+            
+            if (e.key === 'Enter' && searchResults.length > 0) {
                 addTag(searchResults[selectedResult]);
                 onTagAdded();
                 setSelectedResult(0);
@@ -54,6 +124,9 @@ export default function SearchTagFinder({
                         return prev;
                     }
                 });
+            } else if (e.key === 'Escape') {
+                setIsVisible(false);
+                input?.blur();
             }
         }
 
@@ -107,12 +180,13 @@ export default function SearchTagFinder({
         return searchResults;
     }
 
-    if (!tags || !searchString || searchString.length < 3) {
+    if (!isVisible || !tags || !searchString || searchString.length < 3) {
         return <></>;
     }
 
     return (
         <div
+            ref={tagFinderRef}
             className="tag-finder"
             style={{
                 position: 'absolute',
@@ -128,11 +202,12 @@ export default function SearchTagFinder({
             data-testid="search-tag-finder"
         >
             {searchResults.map((tagResult, index) => {
-                return (
-                    <div
+                    const isSelected = index === selectedResult;
+                    return (<div
                         key={`${tagResult.type}-${tagResult.id}`}
+                        ref={isSelected ? selectedItemRef : null}
                         className={
-                            index === selectedResult
+                            isSelected
                                 ? 'tag-result-selected'
                                 : 'tag-result'
                         }
@@ -142,7 +217,7 @@ export default function SearchTagFinder({
                         role='button'
                         aria-label='search tag button'
                         data-testid={
-                            index === selectedResult
+                            isSelected
                                 ? 'tag-result-selected'
                                 : 'tag-result'
                         }

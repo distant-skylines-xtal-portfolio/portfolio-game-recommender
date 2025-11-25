@@ -174,7 +174,6 @@ function transformKeyword(raw: RawKeyword): keywordTag {
 }
 
 function transformFullGameInfo(raw: rawFullGameInfo): GameInfoResult {
-    console.log('Raw Game Info:', raw);
     return {
         id: raw.id,
         age_ratings: raw.age_ratings,
@@ -263,7 +262,10 @@ export const gameApi = {
 
     getPlatforms: async () => {
         const response = await apiClient.get('/api/games/platforms');
-        return response.data.platforms.map(transformPlatform);
+        const platforms = response.data.platforms.map(transformPlatform);
+        const operatingSystems = response.data.operatingSystems.map(transformPlatform);
+        
+        return [...platforms, ...operatingSystems];
     },
 
     searchByName: async (searchText: string) => {

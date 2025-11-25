@@ -50,6 +50,7 @@ export function Searchbar({ restoredTags=[], onSearch }: SearchBarProps) {
                             placeholder="&nbsp;"
                             data-testid="add-tag-input"
                             role='searchbox'
+                            autoComplete='off'
                         />
                         <label
                             htmlFor="add-tag-input"

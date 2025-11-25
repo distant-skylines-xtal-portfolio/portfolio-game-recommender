@@ -145,6 +145,17 @@ main {
     gap: 12px;
 }
 
+.igdb-subtitle {
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    padding-left: 18px;
+    padding-bottom: 10px;
+}
+
 /* Search bar text input */
 .text-input {
     position: relative;
@@ -415,15 +426,19 @@ input:focus ~ .text-input-label {
     background-color: var(--color-primary);
     border: 1px solid var(--color-grey);
     border-radius: 12px;
-    width: max-content;
-
-    flex: 0;
+    height: max-content;
+    max-width: 100%;
+    
+    flex: 0 0 auto;
+    
     padding: 8px;
     color: var(--color-text);
 }
 
 .platform-pill > p {
-    white-space: nowrap;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    font-size: 0.8rem;
 }
 
 /* Search result pagination */

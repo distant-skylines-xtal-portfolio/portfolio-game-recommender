@@ -86,6 +86,7 @@ export default function GameCard({ gameInfo }: GameResultProps): JSX.Element {
         );
 
         if (!platformTag) {
+            console.log(`failed to find platformId: ${platformId}`);
             return 'Not found';
         }
 
