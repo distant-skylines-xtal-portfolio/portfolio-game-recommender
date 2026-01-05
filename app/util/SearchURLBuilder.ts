@@ -159,10 +159,12 @@ export class SearchUrlBuilder {
     /**
      * Build the complete search URL
      */
-    static buildSearchUrl(tags: SearchTagType[], offset: number = 0): string {
+    static buildSearchUrl(tags: SearchTagType[], offset: number, basePath: string = ''): string {
         const searchPath = this.buildSearchPath(tags, offset);
-        return searchPath ? `/search/${searchPath}` : '/';
+        const path = searchPath ? `search/${searchPath}` : '/';
+        return basePath ? `${basePath}${path}` : path;
     }
+
 
     /**
      * Build a detail URL that preserves the search context

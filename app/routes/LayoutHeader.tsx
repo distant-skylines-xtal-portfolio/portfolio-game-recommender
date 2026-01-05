@@ -1,6 +1,6 @@
 import { AnimatePresence } from 'framer-motion';
-import { useEffect, useState, type JSX } from 'react';
-import { useLocation } from 'react-router';
+import { useEffect, useEffectEvent, useMemo, useState, type JSX } from 'react';
+import { useHref, useLocation } from 'react-router';
 import AnimatedHeader from '~/components/AnimatedHeader';
 import AnimatedOutlet from '~/components/AnimatedOutlet';
 import LoadingScreen from '~/components/LoadingScreen';
@@ -17,6 +17,7 @@ type SearchState = {
     offset: number;
 }
 
+
 export function HeaderLayout(): JSX.Element {
     const location = useLocation();
     const [tagContext, setTagContext] = useState<searchContextType>(null);
@@ -26,6 +27,8 @@ export function HeaderLayout(): JSX.Element {
     }); 
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
+    const homePath = useHref('/');
+    
     useEffect(() => {
         async function loadInitialData() {
             try {
@@ -59,7 +62,13 @@ export function HeaderLayout(): JSX.Element {
     useEffect(() => {
         if (!tagContext) return;
 
-        const searchpath = SearchUrlBuilder.getSearchPathFromLocation(location.pathname);
+        //Remove base path if present 
+        let pathname = location.pathname;
+        if (homePath && pathname.startsWith(homePath)) {
+            pathname = pathname.slice(homePath.length);
+        }
+
+        const searchpath = SearchUrlBuilder.getSearchPathFromLocation(pathname);
         
         if (searchpath) {
             const {tags, offset} = SearchUrlBuilder.parseSearchPath(searchpath, tagContext);
@@ -72,14 +81,21 @@ export function HeaderLayout(): JSX.Element {
         }
     }, [tagContext]); // Only run once when tags load
 
+    const updateUrl = useEffectEvent(() => {
+
+    })
+
     // Sync URL with search state changes
     useEffect(() => {
-        const isSearchRoute = location.pathname === '/' || location.pathname.startsWith('/search');
+        const isSearchRoute = location.pathname === '/' || 
+                              location.pathname.startsWith('/search') || 
+                              location.pathname.startsWith(`${homePath}search`);
+
         if (!isSearchRoute) return;
 
         const newUrl = searchState.tags.length > 0
-            ? SearchUrlBuilder.buildSearchUrl(searchState.tags, searchState.offset)
-            : '/';
+            ? SearchUrlBuilder.buildSearchUrl(searchState.tags, searchState.offset, homePath)
+            : homePath || '/';
             
         if (location.pathname !== newUrl) {
             window.history.replaceState(null, '', newUrl);
@@ -100,12 +116,12 @@ export function HeaderLayout(): JSX.Element {
         }))
     }
     
-    const searchStateValue: SearchStateContextType = {
+    const searchStateValue: SearchStateContextType = useMemo(() => ({
         searchTags: searchState.tags,
         currentOffset: searchState.offset,
         setSearchTags,
         setCurrentOffset,
-    };
+    }), [searchState.tags, searchState.offset]); 
     if (isInitialLoading) {
         return (
             <AnimatePresence mode="wait">

@@ -66,7 +66,7 @@ export default function Home() {
         }
 
         performSearch();
-    }, [currentSearchStateContext]);
+    }, [currentSearchStateContext.searchTags, currentSearchStateContext.setCurrentOffset]);
 
     async function handleSearch(tags: SearchTagType[], offset: number = 0) {
         if (!currentSearchStateContext) return;
